@@ -1,0 +1,140 @@
+<?php
+// $Id: micro.install, v 1.0 2010/12/01 04:20:00 blup Exp $
+
+/**
+ * @file
+ * Install, update and uninstall functions for the micro_publisher_node module.
+ */
+
+/**
+ * Implement hook_install().
+ */
+function micro_publisher_node_install() {
+}
+
+/**
+ * Implement hook_schema().
+ */
+function micro_publisher_node_schema() {
+  //return $schema;
+}
+
+/**
+ * Implements hook_enable().
+ */
+function micro_publisher_node_enable() {
+  micro_publisher_node_text();
+  micro_publisher_node_date();
+  micro_publisher_node_image();
+  micro_publisher_node_video();
+  micro_publisher_node_file();
+}
+
+function micro_publisher_node_text() {
+  // Auto-create a field for the full name, if it doesn't exist yet.
+  if (!field_info_field('micro_text')) {
+    $field = array(
+      'field_name' => 'micro_text',
+      'type' => 'text',
+      'cardinality' => 1,
+      'translatable' => FALSE,
+    );
+    field_create_field($field);
+
+  $instance = array(
+    'entity_type' => 'micro',
+    'field_name' => 'micro_text',
+    'bundle' => 'event',
+    'label' => 'Description',
+    'description' => '',
+    'widget' => array(
+      'type' => 'text_textfield',
+      'weight' => 0,
+    ),
+  );
+  field_create_instance($instance);
+  }
+}
+
+function micro_publisher_node_date() {
+  // Auto-create a field for the full name, if it doesn't exist yet.
+  if (!field_info_field('micro_date')) {
+    $field = array(
+      'field_name' => 'micro_date',
+      'type' => 'date',
+      'cardinality' => 1,
+      'translatable' => FALSE,
+    );
+    field_create_field($field);
+
+  $instance = array(
+    'entity_type' => 'micro',
+    'field_name' => 'micro_date',
+    'bundle' => 'event',
+    'label' => 'Date',
+    'description' => '',
+    'widget' => array(
+      'type' => 'date_text',
+      'weight' => 0,
+    ),
+  );
+  field_create_instance($instance);
+  }
+}
+
+
+function micro_publisher_node_image() {
+  // Auto-create a field for the full name, if it doesn't exist yet.
+  if (!field_info_field('micro_image')) {
+    $field = array(
+      'field_name' => 'micro_image',
+      'type' => 'image',
+      'cardinality' => 1,
+      'translatable' => FALSE,
+    );
+    field_create_field($field);
+
+  $instance = array(
+    'entity_type' => 'micro',
+    'field_name' => 'micro_image',
+    'bundle' => 'event',
+    'label' => 'Image',
+    'description' => '',
+    'widget' => array(
+      'type' => 'image',
+      'weight' => 0,
+    ),
+  );
+  field_create_instance($instance);
+  }
+}
+
+function micro_publisher_node_video() {
+}
+function micro_publisher_node_file() {
+  // Auto-create a field for the full name, if it doesn't exist yet.
+  if (!field_info_field('micro_file')) {
+    $field = array(
+      'field_name' => 'micro_file',
+      'type' => 'file',
+      'cardinality' => 1,
+      'translatable' => FALSE,
+    );
+    field_create_field($field);
+
+  $instance = array(
+    'entity_type' => 'micro',
+    'field_name' => 'micro_file',
+    'bundle' => 'event',
+    'label' => 'File',
+    'description' => '',
+    'widget' => array(
+      'type' => 'file',
+      'weight' => 0,
+    ),
+  );
+  field_create_instance($instance);
+  }
+
+}
+

@@ -1,0 +1,169 @@
+<?php
+// $Id: micro.module, v 1.0 2010/12/01 04:20:00 blup Exp $
+
+// todo
+// hook_micro_info invque theme / formatter
+// feilds pour chacun
+// page config qui detremine les onglets dispos
+
+/**
+ * @file
+ * Micro Publisher  tool
+ */
+
+//=============
+//DRUPAL HOOKS.
+//=============
+
+
+/**
+ * Implementation of hook_cron().
+ * TODO
+ */
+function micro_publisher_node_cron() {
+}
+
+/**
+ * Implementation of hook_help().
+ */
+function micro_publisher_node_help($path, $arg) {
+  if ($path == 'admin/help#micro_publisher_node') {
+    return t('Provides micro publishers for node status.');
+  }
+}
+
+/**
+ * Implements hook_permission().
+ */
+function micro_publisher_node_permission() {
+  return array(
+    'administer micro_publisher_node' => array(
+      'title' => t('Administer micro_publisher_node'),
+    ),
+  );
+}
+
+
+/**
+ * Implements hook_menu().
+ */
+function micro_publisher_node_menu() {
+  $items['admin/micro-publisher-node/settings'] = array(
+    'title' => 'Micro publisher node settings',
+    'description' => "Change Micro publisher node settings.",
+    'page callback' => 'micro_publisher_node_admin_overview',
+    'access arguments' => array('administer micro_publisher_node'),
+    'weight' => -10,
+    'file' => 'micro_publisher_node.admin.inc',
+  );
+
+  return $items;
+}
+
+function micro_publisher_node_micro_info() {
+  return array(
+    'text' => array(
+      'name' => t('text'),
+      //'base' => 'micro_text',
+      'description' => t('Text Micro'),
+    ),
+    'event' => array(
+      'name' => t('event'),
+      //'base' => 'micro_event',
+      'description' => t('Event Micro'),
+    ),
+    'image' => array(
+      'name' => t('image'),
+      //'base' => 'micro_image',
+      'description' => t('Image Micro'),
+    ),
+    'video' => array(
+      'name' => t('video'),
+      //'base' => 'micro_video',
+      'description' => t('Video Micro'),
+    ),
+    'file' => array(
+      'name' => t('file'),
+      //'base' => 'micro_file',
+      'description' => t('File Micro'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_theme().
+ *//*
+function micro_publisher_node_theme() {
+  return array(
+    'micro_admin_type' => array(
+      'variables' => array('name' => NULL, 'type' => NULL),
+    ),
+  );
+}*/
+
+/**
+ * Implements hook_node_view().
+ *//*
+function micro_node_view($node, $view_mode) {
+  $links = micro_link('node', $node, $view_mode == 'teaser');
+  $node->content['links']['micro'] = array(
+    '#theme' => 'links',
+    '#links' => $links,
+    '#attributes' => array('class' => array('links', 'inline')),
+  );
+}*/
+
+/*
+function micro_view($micro, $view_mode = 'full', $langcode = NULL) {
+  if (!isset($langcode)) {
+    $langcode = $GLOBALS['language_content']->language;
+  }
+
+  // Populate $micro->content with a render() array.
+  micro_build_content($micro, $view_mode, $langcode);
+
+  $build = $micro->content;
+  // We don't need duplicate rendering info in micro->content.
+  unset($micro->content);
+
+  $build += array(
+    '#theme' => 'micro',
+    '#micro' => $micro,
+    '#view_mode' => $view_mode,
+    '#language' => $langcode,
+  );
+
+  // Add contextual links for this micro, except when the micro is already being
+  // displayed on its own page. Modules may alter this behavior (for example,
+  // to restrict contextual links to certain view modes) by implementing
+  // hook_micro_view_alter().
+  if (!empty($micro->mid) && !($view_mode == 'full' && micro_is_page($micro))) {
+    $build['#contextual_links']['micro'] = array('micro', array($micro->mid));
+  }
+
+  // Allow modules to modify the structured micro.
+  drupal_alter('micro_view', $build);
+
+  return $build;
+}*/
+
+function micro_publisher_node_node_view($node, $view_mode) {
+  drupal_add_library('system', 'ui.tabs');
+  drupal_add_js(drupal_get_path('module', 'micro_publisher_node') .'/micro_publisher_node.js');
+
+  $node->content['extra'] = array();
+  $node->content['extra']['#markup'] = '
+    <div id="micro-publishers">
+      <ul>
+        <li><a href="ahah_1.html"><span>Todo</span></a></li>
+        <li><a href="ahah_2.html"><span>Event</span></a></li>
+        <li><a href="ahah_3.html"><span>Image</span></a></li>
+        <li><a href="ahah_3.html"><span>Video</span></a></li>
+        <li><a href="ahah_3.html"><span>File</span></a></li>
+      </ul>
+    </div>';
+    $node->content['extra']['#attached'] = array('js' => array(drupal_get_path('module', 'micro_publisher_node').'/micro_publisher_node.js'));
+}
+
+
+

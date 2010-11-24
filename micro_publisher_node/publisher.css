@@ -1,0 +1,18 @@
+.form-item-micro-publisher-node-todos { float:left; width:200px;}
+#todos-fieldset-wrapper {float:left; width:200px;}
+
+.form-item-micro-publisher-node-events { float:left; width:200px;}
+#events-fieldset-wrapper {float:left; width:200px;}
+
+.form-item-micro-publisher-node-images { float:left; width:200px;}
+#images-fieldset-wrapper {float:left; width:200px;}
+
+.form-item-micro-publisher-node-videos { float:left; width:200px;}
+#videos-fieldset-wrapper {float:left; width:200px;}
+
+.form-item-micro-publisher-node-files { float:left; width:200px;}
+#files-fieldset-wrapper {float:left; width:200px;}
+
+.show { display: block;}
+.hide { display: none;}
+
