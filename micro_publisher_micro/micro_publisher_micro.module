@@ -1,0 +1,62 @@
+<?php
+// $Id: micro_publisher_micro.module, v 1.0 2010/12/01 04:20:00 blup Exp $
+
+/**
+ * @file
+ * Micro publisher for micros.
+ */
+
+/**
+ * Implementation of hook_help().
+ */
+function micro_publisher_micro_help($path, $arg) {
+  if ($path == 'admin/help#micro_publisher_micro') {
+    return t('Provides a micro publisher for micros.');
+  }
+}
+
+/**
+ * Implements hook_permission().
+ */
+function micro_publisher_micro_permission() {
+  return array(
+    'administer micro micro publisher' => array(
+      'title' => t('Administer micro micro publisher'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function micro_publisher_micro_menu() {
+  $items['admin/config/micro-publisher/settings/micro'] = array(
+    'title' => 'Micro micro publisher settings',
+    'description' => "Change settings for the micro micro publisher.",
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('micro_publisher_settings_form', 'micro'),
+    'access arguments' => array('administer micro micro publisher'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => -10,
+    'file' => '../micro_publisher/micro_publisher.admin.inc',
+  );
+  return $items;
+}
+
+function micro_publisher_micro_micro_info() {
+  return _micro_publisher_data('micro');
+}
+
+/**
+ * Implements hook_micro_view().
+ */
+function micro_publisher_micro_micro_view($micro, $view_mode) {
+  include_once(drupal_get_path('module', 'micro') . '/micro.pages.inc');
+  /*
+   *drupal_add_js(drupal_get_path('module', 'micro_publisher_micro') .'/micro_publisher_micro.js');
+   */
+  $display = micro_publisher_get_display($micro, $micro->mid, $view_mode, array('full'));
+  foreach ($display as $key => $value) {
+    $micro->content[$key] = $value;
+  }
+}

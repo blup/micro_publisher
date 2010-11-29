@@ -1,0 +1,62 @@
+<?php
+// $Id: micro_publisher_user.module, v 1.0 2010/12/01 04:20:00 blup Exp $
+
+/**
+ * @file
+ * Micro publisher for users.
+ */
+
+/**
+ * Implementation of hook_help().
+ */
+function micro_publisher_user_help($path, $arg) {
+  if ($path == 'admin/help#micro_publisher_user') {
+    return t('Provides a micro publisher for users.');
+  }
+}
+
+/**
+ * Implements hook_permission().
+ */
+function micro_publisher_user_permission() {
+  return array(
+    'administer user micro publisher' => array(
+      'title' => t('Administer user micro publisher'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function micro_publisher_user_menu() {
+  $items['admin/config/micro-publisher/settings/user'] = array(
+    'title' => 'User micro publisher settings',
+    'description' => "Change settings for the user micro publisher.",
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('micro_publisher_settings_form', 'user'),
+    'access arguments' => array('administer user micro publisher'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => -10,
+    'file' => '../micro_publisher/micro_publisher.admin.inc',
+  );
+  return $items;
+}
+
+function micro_publisher_user_micro_info() {
+  return _micro_publisher_data('user');
+}
+
+/**
+ * Implements hook_user_view().
+ */
+function micro_publisher_user_user_view($account, $view_mode) {
+  include_once(drupal_get_path('module', 'micro') . '/micro.pages.inc');
+  /*
+   *drupal_add_js(drupal_get_path('module', 'micro_publisher_user') .'/micro_publisher_user.js');
+   */
+  $display = micro_publisher_get_display($account, $account->uid, $view_mode, array('full'));
+  foreach ($display as $key => $value) {
+    $user->content[$key] = $value;
+  }
+}

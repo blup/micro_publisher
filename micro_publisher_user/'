@@ -38,7 +38,7 @@ function micro_publisher_node_menu() {
     'access arguments' => array('administer node micro publisher'),
     'type' => MENU_LOCAL_TASK,
     'weight' => -10,
-    'file' => '../micro_publisher/micro_publisher.admin.inc',
+    'file' => drupal_get_path('module', 'micro_publisher') . '/micro_publisher.admin.inc',
   );
   return $items;
 }
@@ -52,11 +52,9 @@ function micro_publisher_node_micro_info() {
  */
 function micro_publisher_node_node_view($node, $view_mode) {
   include_once(drupal_get_path('module', 'micro') . '/micro.pages.inc');
-  /*
-   *drupal_add_js(drupal_get_path('module', 'micro_publisher_node') .'/micro_publisher_node.js');
-   */
+  drupal_add_js(drupal_get_path('module', 'micro_publisher_node') .'/micro_publisher_node.js');
   $display = micro_publisher_get_display($node, $node->nid, $view_mode, array('full'));
-  foreach ($display as $key => $value) {
+  foreach ($display as $key=>$value) {
     $node->content[$key] = $value;
   }
 }

@@ -1,0 +1,16 @@
+; $Id: micro_publisher.info,v 0.1 2011/01/01 04:20:00 blup Exp $
+
+name = Micro publisher
+description = Base for micro publishers. Does not do anything by itself.
+version = 7.x-1.0
+core = 7.x
+
+files[] = micro_publisher.module
+files[] = micro_publisher.install
+files[] = micro_publisher.admin.inc
+files[] = micro_publisher.js
+
+dependencies[] = micro
+dependencies[] = date
+
+configure = admin/config/micro-publisher/settings

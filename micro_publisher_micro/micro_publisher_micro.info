@@ -1,0 +1,17 @@
+; $Id$ micro_publisher_micro.info, v 1.0 2010/12/01 04:20:00 blup Exp $
+
+name = Micro micro publisher
+description = Provides a micro publisher that attaches to micros.
+version = 7.x-1.0
+core = 7.x
+
+files[] = micro_publisher_micro.module
+files[] = micro_publisher_micro.install
+files[] = ../micro_publisher/micro_publisher.admin.inc
+files[] = micro_publisher_micro.js
+
+dependencies[] = micro
+dependencies[] = micro_publisher
+dependencies[] = date
+
+configure = admin/config/micro-publisher/settings/micro

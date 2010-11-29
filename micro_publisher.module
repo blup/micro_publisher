@@ -1,0 +1,260 @@
+<?php
+// $Id: micro_publisher.module, v 1.0 2010/12/01 04:20:00 blup Exp $
+
+/**
+ * @file
+ * Micro publisher
+ */
+
+/**
+ * Implementation of hook_help().
+ */
+function micro_publisher_help($path, $arg) {
+  if ($path == 'admin/help#micro_publisher') {
+    return t('Provides a micro publisher.');
+  }
+}
+
+/**
+ * Implements hook_permission().
+ */
+function micro_publisher_permission() {
+  return array(
+    'administer micro publishers' => array(
+      'title' => t('Administer micro publishers'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function micro_publisher_menu() {
+  $items['admin/config/micro-publisher/settings'] = array(
+    'title' => 'Micro publisher settings',
+    'description' => "Change settings for the micro publishers.",
+    'access arguments' => array('administer micro publishers'),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+  );
+  return $items;
+}
+
+function micro_publisher_theme() {
+  return array(
+    'micro_publisher' => array(
+      'template' => 'micro-publisher',
+      'render element' => 'elements',
+    ),
+  );
+}
+
+function _micro_publisher_data($entity, $bundle = NULL) {
+  $types = array('status', 'event', 'image', 'video', 'file');
+  foreach ($types as $type) {
+    $data['micro_publisher_' . $entity . '_' . $type] = array(
+      'machine_name' => 'micro_publisher_' . $entity . '_' . $type,
+      'name' => t('@bundle', array('@bundle' => ucfirst($type))),
+      'description' => t('Micro @bundle for @entity', array('@bundle' => ucfirst($type), '@entity' => $entity . 's')),
+      'entity' => $entity,
+      'bundles' => array(),
+      'module' => 'micro_publisher_' . $entity,
+    );
+  }
+  return isset($bundle) ? $data[$bundle] : $data;
+}
+function micro_publisher_get_display($entity, $id, $view_mode, $allowed_view_modes = array()) {
+  include_once(drupal_get_path('module', 'micro') . '/micro.pages.inc');
+  $output = array();
+  if (empty($allowed_view_modes) || in_array($view_mode, $allowed_view_modes)) {
+    $bundles = _micro_publisher_data($entity->content['#entity_type']);
+    $output['micro_publisher'] = array(
+      '#entity' => $entity,
+      '#entity_type' => $entity->content['#entity_type'],
+      '#eid' => $id,
+      '#view_mode' => $view_mode,
+      '#theme' => 'micro_publisher',
+    );
+    foreach (micro_types_from_entity($entity->content['#entity_type'], $entity->content['#bundle']) as $micro_type) {
+      if (in_array($micro_type->machine_name, array_keys($bundles))) {
+        $output['micro_publisher']['input'][$micro_type->machine_name] = array(
+          '#name' => $micro_type->name,
+          '#form' => micro_add($micro_type->machine_name, $id),
+        );
+      }
+    }
+  }
+  return $output;
+}
+
+function micro_publisher_form_micro_publisher_image_micro_form_alter($form, $form_state) {
+  /*
+   *unset($form['micro_publisher_image']['und']['0']['
+   */
+}
+
+/**
+ * Process variables for micro-publisher.tpl.php.
+ *
+ * @see micro-publisher.tpl.php
+ */
+function template_preprocess_micro_publisher(&$variables) {
+  // Provide contextual information.
+  $variables['entity'] = $variables['elements']['#entity'];
+  $variables['entity_type'] = $variables['elements']['#entity_type'];
+  $variables['eid'] = $variables['elements']['#eid'];
+  $variables['view_mode'] = $variables['elements']['#view_mode'];
+  foreach ($variables['elements']['input'] as $key => $values) {
+    $variables[strtolower(str_replace(' ', '_', $values['#name'])) . '_name'] = $values['#name'];
+    $variables[strtolower(str_replace(' ', '_', $values['#name'])) . '_form'] = $values['#form'];
+  }
+  // Clean up name so there are no underscores.
+  $variables['theme_hook_suggestions'][] = 'micro_publisher__' . $variables['entity_type'];
+
+  // Add js and css files
+  drupal_add_js('misc/ui/jquery.ui.core.min.js', array('weight' => JS_LIBRARY + 5));
+  drupal_add_css('misc/ui/jquery.ui.core.css');
+  drupal_add_js('misc/ui/jquery.ui.widget.min.js', array('weight' => JS_LIBRARY + 5));
+  drupal_add_js('misc/ui/jquery.ui.tabs.min.js', array('weight' => JS_LIBRARY + 5));
+  drupal_add_css('misc/ui/jquery.ui.tabs.css');
+  drupal_add_js(drupal_get_path('module', 'micro_publisher') . '/micro_publisher.js');
+  drupal_add_css('micro-publisher.css');
+}
+
+function _micro_publisher_status($entity) {
+  // Auto-create a field for the text, if it doesn't exist yet.
+  if (!field_info_field('micro_publisher_status')) {
+    $field = array(
+      'field_name' => 'micro_publisher_status',
+      'type' => 'text',
+      'cardinality' => 1,
+      'translatable' => FALSE,
+    );
+    field_create_field($field);
+  }
+
+  if (!field_info_instance('micro', 'micro_publisher_status', 'micro_publisher_' . $entity . '_status')) {
+    $instance = array(
+      'entity_type' => 'micro',
+      'field_name' => 'micro_publisher_status',
+      'bundle' => 'micro_publisher_' . $entity . '_status',
+      'label' => 'Status',
+      'description' => '',
+      'widget' => array(
+        'type' => 'text_textfield',
+        'weight' => 0,
+      ),
+    );
+    field_create_instance($instance);
+  }
+}
+
+function _micro_publisher_event($entity) {
+  // Auto-create a field for the date, if it doesn't exist yet.
+  if (!field_info_field('micro_publisher_event_date')) {
+    $field = array(
+      'field_name' => 'micro_publisher_event_date',
+      'type' => 'date',
+      'cardinality' => 1,
+      'translatable' => FALSE,
+    );
+    field_create_field($field);
+  }
+  if (!field_info_field('micro_publisher_event_text')) {
+    $field = array(
+      'field_name' => 'micro_publisher_event_text',
+      'type' => 'text_long',
+      'cardinality' => 1,
+      'translatable' => FALSE,
+    );
+    field_create_field($field);
+  }
+
+  if (!field_info_instance('micro', 'micro_publisher_event_date', 'micro_publisher_' . $entity . '_event')) {
+    $instance = array(
+      'entity_type' => 'micro',
+      'field_name' => 'micro_publisher_event_date',
+      'bundle' => 'micro_publisher_' . $entity . '_event',
+      'label' => 'Date',
+      'description' => '',
+      'widget' => array(
+        'type' => 'date_text',
+        'weight' => 0,
+      ),
+    );
+    field_create_instance($instance);
+  }
+  if (!field_info_instance('micro', 'micro_publisher_event_text', 'micro_publisher_' . $entity . '_event')) {
+    $instance = array(
+      'entity_type' => 'micro',
+      'field_name' => 'micro_publisher_event_text',
+      'bundle' => 'micro_publisher_' . $entity . '_event',
+      'label' => 'Description',
+      'description' => '',
+      'widget' => array(
+        'type' => 'text_textarea',
+        'weight' => 0,
+      ),
+    );
+    field_create_instance($instance);
+  }
+}
+
+function _micro_publisher_image($entity) {
+  // Auto-create a field for the image, if it doesn't exist yet.
+  if (!field_info_field('micro_publisher_image')) {
+    $field = array(
+      'field_name' => 'micro_publisher_image',
+      'type' => 'image',
+      'cardinality' => 1,
+      'translatable' => FALSE,
+    );
+    field_create_field($field);
+    }
+
+  if (!field_info_instance('micro', 'micro_publisher_image', 'micro_publisher_' . $entity . '_image')) {
+    $instance = array(
+      'entity_type' => 'micro',
+      'field_name' => 'micro_publisher_image',
+      'bundle' => 'micro_publisher_' . $entity . '_image',
+      'label' => 'Image',
+      'description' => '',
+      'widget' => array(
+        'type' => 'image',
+        'weight' => 0,
+      ),
+    );
+    field_create_instance($instance);
+  }
+}
+
+function _micro_publisher_video($entity) {
+}
+function _micro_publisher_file($entity) {
+  // Auto-create a field for the file, if it doesn't exist yet.
+  if (!field_info_field('micro_publisher_file')) {
+    $field = array(
+      'field_name' => 'micro_publisher_file',
+      'type' => 'file',
+      'cardinality' => 1,
+      'translatable' => FALSE,
+    );
+    field_create_field($field);
+  }
+
+  if (!field_info_instance('micro', 'micro_publisher_file', 'micro_publisher_' . $entity . '_file')) {
+    $instance = array(
+      'entity_type' => 'micro',
+      'field_name' => 'micro_publisher_file',
+      'bundle' => 'micro_publisher_' . $entity . '_file',
+      'label' => 'File',
+      'description' => '',
+      'widget' => array(
+        'type' => 'file',
+        'weight' => 0,
+      ),
+    );
+    field_create_instance($instance);
+  }
+}
+

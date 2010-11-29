@@ -1,0 +1,19 @@
+<?php
+// $Id: micro_publisher_micro.install, v 1.0 2010/12/01 04:20:00 blup Exp $
+
+/**
+ * @file
+ * Install function for the micro_publisher_micro module.
+ */
+
+/**
+ * Implement hook_install().
+ */
+function micro_publisher_micro_install() {
+  micro_types_rebuild();
+  _micro_publisher_status('micro');
+  _micro_publisher_event('micro');
+  _micro_publisher_image('micro');
+  _micro_publisher_video('micro');
+  _micro_publisher_file('micro');
+}
